@@ -6,7 +6,7 @@ const healthyColor = 'white';
 const sickColor = 'orangered';
 const recoveredColor = 'lightseagreen';
 
-var btn = document.querySelector('#btn');
+let btn = document.querySelector('#btn');
 
 let count = 200,    // 150
     ballSize = 5,   // 5
@@ -18,13 +18,14 @@ let count = 200,    // 150
     ballsArr = [];
 
 
-// Canvas и контекст
-let canvas = document.querySelector('#canvas');
+// Canvas'ы и контекст
+let canvasModel = document.querySelector('#canvas-model');
+let canvasGraphic = document.querySelector('#canvas-graphic');
 
-canvas.width = 800;       // window.innerWidth
-canvas.height = 400;     // window.innerHeight
+canvasModel.width = 800;       // window.innerWidth
+canvasModel.height = 400;     // window.innerHeight
 
-let c = canvas.getContext('2d');
+let c = canvasModel.getContext('2d');
 
 // Конструктор шариков
 function Ball(x, y, radius, speed) {
@@ -55,10 +56,10 @@ function Ball(x, y, radius, speed) {
         this.y += this.velocity.y;
 
         // Walls collision
-        if (this.x - this.radius <= 0 || this.x + this.radius >= canvas.width) {
+        if (this.x - this.radius <= 0 || this.x + this.radius >= canvasModel.width) {
             this.velocity.x = - this.velocity.x;
         }
-        if (this.y - this.radius <= 0 || this.y + this.radius >= canvas.height) {
+        if (this.y - this.radius <= 0 || this.y + this.radius >= canvasModel.height) {
             this.velocity.y = - this.velocity.y;
         }
 
@@ -68,7 +69,6 @@ function Ball(x, y, radius, speed) {
 
             // console.log(this, arr[i], checkCollision(this, arr[i]));
             if (getDistance(this.x, this.y, arr[i].x, arr[i].y) <= this.radius + arr[i].radius) {
-                console.log('collided');
                 // this.color = 'red';
                 this.resolveCollision(this, arr[i]);
             };
@@ -91,10 +91,10 @@ function Ball(x, y, radius, speed) {
     }
 
     this.resolveCollision = function(ball, otherBall) {
-        var xVelocityDiff = ball.velocity.x - otherBall.velocity.x;
-        var yVelocityDiff = ball.velocity.y - otherBall.velocity.y;
-        var xDist = otherBall.x - ball.x;
-        var yDist = otherBall.y - ball.y;
+        let xVelocityDiff = ball.velocity.x - otherBall.velocity.x;
+        let yVelocityDiff = ball.velocity.y - otherBall.velocity.y;
+        let xDist = otherBall.x - ball.x;
+        let yDist = otherBall.y - ball.y;
 
         // Меняем цвет
         this.resolveColor(ball, otherBall);
@@ -142,14 +142,14 @@ function Ball(x, y, radius, speed) {
 
 function createBalls(count, staticPart) {
     for (let i = 0; i < count; i++) {
-        let x = getRandom(canvas.width, ballSize),
-            y = getRandom(canvas.height, ballSize);
+        let x = getRandom(canvasModel.width, ballSize),
+            y = getRandom(canvasModel.height, ballSize);
         
         if (i !== 0) {
             for (let j = 0; j < ballsArr.length; j++) {
                 if (getDistance(x, y, ballsArr[j].x, ballsArr[j].y) <= ballSize + ballsArr[j].radius) {
-                    x = getRandom(canvas.width, ballSize);
-                    y = getRandom(canvas.height, ballSize);
+                    x = getRandom(canvasModel.width, ballSize);
+                    y = getRandom(canvasModel.height, ballSize);
                     j = -1;
                 }
             }  
@@ -193,7 +193,7 @@ function rotate(velocity, angle) {
 function animate() {
     requestId = requestAnimationFrame(animate);
 
-    c.clearRect(0, 0, canvas.width, canvas.height);
+    c.clearRect(0, 0, canvasModel.width, canvasModel.height);
     ballsArr.forEach(function(ball) {
         ball.update(ballsArr);
     });
@@ -204,7 +204,7 @@ animate();
 
 
 // Pause
-canvas.addEventListener('click', function(evt) {
+canvasModel.addEventListener('click', function(evt) {
     if (status === 'started') {
        status = 'paused';
        cancelAnimationFrame(requestId);
@@ -223,10 +223,10 @@ btn.addEventListener('click', function(evt) {
 
 
 // this.resolveCollision = function(ball, otherBall) {
-//     var xVelocityDiff = ball.velocity.x - otherBall.velocity.x;
-//     var yVelocityDiff = ball.velocity.y - otherBall.velocity.y;
-//     var xDist = otherBall.x - ball.x;
-//     var yDist = otherBall.y - ball.y;
+//     let xVelocityDiff = ball.velocity.x - otherBall.velocity.x;
+//     let yVelocityDiff = ball.velocity.y - otherBall.velocity.y;
+//     let xDist = otherBall.x - ball.x;
+//     let yDist = otherBall.y - ball.y;
 
 //     // Меняем цвет
 //     this.resolveColor(ball, otherBall);
