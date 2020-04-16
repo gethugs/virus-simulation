@@ -8,24 +8,23 @@ const recoveredColor = 'lightseagreen';
 
 let btn = document.querySelector('#btn');
 
-let count = 200,    // 150
-    ballSize = 5,   // 5
-    staticPart = 0.7,
+let count = 1000,    // 200
+    ballSize = 2,   // 5
+    staticPart = 0.8,
     recoveryTime = 9000,
-    speed = 1,
+    speed = 2,
     status = 'started',
     requestId,
     ballsArr = [];
 
 
-// Canvas'ы и контекст
+// canvasModel и контекст
 let canvasModel = document.querySelector('#canvas-model');
-let canvasGraphic = document.querySelector('#canvas-graphic');
 
 canvasModel.width = 800;       // window.innerWidth
 canvasModel.height = 400;     // window.innerHeight
 
-let c = canvasModel.getContext('2d');
+let c1 = canvasModel.getContext('2d');
 
 // Конструктор шариков
 function Ball(x, y, radius, speed) {
@@ -42,13 +41,13 @@ function Ball(x, y, radius, speed) {
     }
 
     this.draw = function() {
-        c.beginPath();
-        // c.strokeStyle = 'lightgrey';
-        c.fillStyle = this.color;
-        c.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
-        c.closePath();
-        c.fill();
-        // c.stroke();
+        c1.beginPath();
+        // c1.strokeStyle = 'lightgrey';
+        c1.fillStyle = this.color;
+        c1.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
+        c1.closePath();
+        c1.fill();
+        // c1.stroke();
     }
 
     this.update = function(arr) {
@@ -107,33 +106,21 @@ function Ball(x, y, radius, speed) {
             let angle = -Math.atan2(otherBall.y - ball.y, otherBall.x - ball.x);
             let angleBall = -Math.atan2(ball.velocity.y, ball.velocity.x);
             let angleOtherBall = -Math.atan2(ball.velocity.y, ball.velocity.x);
-            console.log('угол: ', angle * 180 / Math.PI);
-            
-            console.log('ball.velocity = ', ball.velocity);
-            console.log('otherBall.velocity = ', otherBall.velocity);
 
             const u1 = rotate(ball.velocity, angle);
             const u2 = rotate(otherBall.velocity, angle);
-            console.log('u1 = ', u1);
-            console.log('u2 = ', u2);
 
             const v1 = { x: -u1.x, y: u1.y };
             const v2 = { x: -u2.x, y: u2.y };
-            console.log('v1 = ', v1);
-            console.log('v2 = ', v2);
 
             const vFinal1 = rotate(v1, -angle);
             const vFinal2 = rotate(v2, -angle);
-            console.log('vFinal1 = ', vFinal1);
-            console.log('vFinal2 = ', vFinal2);
             if (ball.velocity.x !== 0 || ball.velocity.y !== 0) {
-                console.log('ball: ', ball.color);
                 // ball.velocity = rotate(v1, -angle);
                 ball.velocity = vFinal1;
             }
             if (otherBall.velocity.x !== 0 || otherBall.velocity.y !== 0) {
                 // otherBall.velocity = rotate(v2, -angle);
-                console.log('otherBall: ', otherBall.color, '\n\n');
                 otherBall.velocity = vFinal2;
             }
         }
@@ -189,38 +176,6 @@ function rotate(velocity, angle) {
     };
 }
 
-// Анимация
-function animate() {
-    requestId = requestAnimationFrame(animate);
-
-    c.clearRect(0, 0, canvasModel.width, canvasModel.height);
-    ballsArr.forEach(function(ball) {
-        ball.update(ballsArr);
-    });
-}
-// Инициализируем
-createBalls(count, staticPart)
-animate();
-
-
-// Pause
-canvasModel.addEventListener('click', function(evt) {
-    if (status === 'started') {
-       status = 'paused';
-       cancelAnimationFrame(requestId);
-    } else {
-        // init();
-        status = 'started';
-        animate();
-    }
-});
-
-btn.addEventListener('click', function(evt) {
-    console.log(rotate(ballsArr[0].velocity, Math.PI/2));
-    ballsArr[0].velocity = rotate(ballsArr[0].velocity, Math.PI/2);
-});
-
-
 
 // this.resolveCollision = function(ball, otherBall) {
 //     let xVelocityDiff = ball.velocity.x - otherBall.velocity.x;
@@ -253,3 +208,113 @@ btn.addEventListener('click', function(evt) {
 //         }
 //     }
 // }
+
+// canvasGraphic и контекст
+let canvasGraphic = document.querySelector('#canvas-graphic');
+canvasGraphic.width = 800;
+canvasGraphic.height = 150;
+let c2 = canvasGraphic.getContext('2d');
+
+let stats = {};
+function countStats(obj) {
+	obj.healthy = 0;
+	obj.sick = 0;
+	obj.recovered = 0;
+	ballsArr.forEach(function(ball) {
+		if(ball.color === healthyColor) obj.healthy++;
+		if(ball.color === sickColor) obj.sick++;
+		if(ball.color === recoveredColor) obj.recovered++;
+	});
+}
+
+// Элементы статистики
+let healthyCount = document.querySelector('.healthy');
+let sickCount = document.querySelector('.sick');
+let recoveredCount = document.querySelector('.recovered');
+
+function printStats(obj) {
+	countStats(obj);
+	healthyCount.innerHTML = obj.healthy;
+	sickCount.innerHTML = obj.sick;
+	recoveredCount.innerHTML = obj.recovered;
+}
+
+let linesArr = [],
+		lineX = 0,
+		graphicXSpeed = 0.5;
+
+function VerticalLine(x, y, width, height, stats) {
+	this.x = x;
+	this.y = y;
+	this.width = width;
+	this.height = height;
+
+	console.log(stats);
+
+	this.rHeight = height * stats.recovered / count;
+	this.hHeight = height * stats.healthy / count;
+	this.sHeight = height * stats.sick / count;
+
+	this.drawLine = function(a, b, c, d, col) {
+		c2.beginPath();
+		c2.fillStyle = col;
+		c2.rect(a, b, c, d);
+		c2.closePath();
+		c2.fill();
+	}
+
+	this.draw = function() {
+		this.drawLine(this.x, this.y, this.width, this.rHeight, recoveredColor);
+		// this.y += this.rHeight;
+		this.drawLine(this.x, this.y + this.rHeight, this.width, this.hHeight, healthyColor);
+		// this.y += this.hHeight;
+		this.drawLine(this.x, this.y + this.rHeight + this.hHeight, this.width, this.sHeight, sickColor);
+	}
+
+}
+
+
+// Анимация
+function animate() {
+	requestId = requestAnimationFrame(animate);
+
+	// c1
+	c1.clearRect(0, 0, canvasModel.width, canvasModel.height);
+	ballsArr.forEach(function(ball) {
+		ball.update(ballsArr);
+	});
+
+	// c2
+	if (linesArr.length < canvasGraphic.width / graphicXSpeed) {
+		linesArr.push(new VerticalLine(lineX, 0, graphicXSpeed, canvasGraphic.height, stats));
+	}
+	linesArr.forEach(function(line) {
+		line.draw();
+	});
+	lineX += graphicXSpeed;
+
+	console.log(linesArr);
+
+	printStats(stats);
+}
+// Инициализируем
+createBalls(count, staticPart)
+animate();
+
+
+// Pause
+canvasModel.addEventListener('click', function(evt) {
+	if (status === 'started') {
+		 status = 'paused';
+		 cancelAnimationFrame(requestId);
+	} else {
+			// init();
+			status = 'started';
+			animate();
+	}
+});
+
+// btn.addEventListener('click', function(evt) {
+// 	console.log(rotate(ballsArr[0].velocity, Math.PI/2));
+// 	ballsArr[0].velocity = rotate(ballsArr[0].velocity, Math.PI/2);
+// });

@@ -2,3 +2,10 @@
     background-color: rgba(75, 99, 116, 0.493);
     /* background-color: aliceblue; */
 }
+#canvas-graphic {
+	background-color: rgba(75, 99, 116, 0.493);
+	/* background-color: aliceblue; */
+}
+.numbers div {
+	font-size: 20px;
+}
