@@ -14,8 +14,36 @@
 					<div>Recovered: <span class="recovered"></span></div>
 				</div>
         <canvas id="canvas-graphic"></canvas>
-    </div>
-    <canvas id="canvas-model"></canvas>
+	 </div>
+	 <div>
+		<canvas id="canvas-model"></canvas>
+		<form action="">
+			<div class="count-div">
+				<label for="count">Количество элементов:</label>
+				<input type="number" id="count" required min="10" max="1000" value="200" step="1">
+			</div>
+			<div class="percent-div">
+				<label for="percent">Процент изолированных:</label>
+				<input type="range" id="percent" min="0" max="100" step="5">
+				<datalist id="percent">
+					<option value="0" label="0%"></option>
+					<option value="10"></option>
+					<option value="20"></option>
+					<option value="30"></option>
+					<option value="40"></option>
+					<option value="50" label="50%"></option>
+					<option value="60"></option>
+					<option value="70"></option>
+					<option value="80"></option>
+					<option value="90"></option>
+					<option value="100" label="100%"></option>
+				 </datalist>
+			</div>
+			<button id="init-btn">Старт</button>
+			<!-- <button id="clear-graphic-btn">Очистить график</button> -->
+		</form>
+	 </div>
+    
     <!-- <button id="btn">Повернуть 1 шар</button> -->
     <script src="js/script.js"></script>
     

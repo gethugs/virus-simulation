@@ -13,7 +13,7 @@ let count = 1000,		// 200
 	staticPart = 0.8,
 	recoveryTime = 9000,
 	speed = 2,
-	status = 'started',
+	status = 'paused',
 	requestId,
 	ballsArr = [];
 
@@ -21,7 +21,7 @@ let count = 1000,		// 200
 // canvasModel и контекст
 let canvasModel = document.querySelector('#canvas-model');
 
-canvasModel.width = 800;			 // window.innerWidth
+canvasModel.width = 600;			 // window.innerWidth
 canvasModel.height = 400;		 // window.innerHeight
 
 let c1 = canvasModel.getContext('2d');
@@ -129,6 +129,8 @@ class Ball {
 }
 
 function createBalls(count, staticPart) {
+	// Очищаем массив
+	ballsArr = [];
 	for (let i = 0; i < count; i++) {
 		let x = getRandom(canvasModel.width, ballSize),
 			y = getRandom(canvasModel.height, ballSize);
@@ -208,7 +210,7 @@ function rotate(velocity, angle) {
 
 // canvasGraphic и контекст
 let canvasGraphic = document.querySelector('#canvas-graphic');
-canvasGraphic.width = 800;
+canvasGraphic.width = 600;
 canvasGraphic.height = 150;
 let c2 = canvasGraphic.getContext('2d');
 
@@ -291,12 +293,12 @@ function animate() {
 	printStats(stats);
 }
 // Инициализируем
-createBalls(count, staticPart)
-animate();
+// createBalls(count, staticPart)
+// animate();
 
 
 // Pause
-canvasModel.addEventListener('click', function(evt) {
+function toggleAnimation() {
 	if (status === 'started') {
 		 status = 'paused';
 		 cancelAnimationFrame(requestId);
@@ -305,9 +307,40 @@ canvasModel.addEventListener('click', function(evt) {
 		status = 'started';
 		animate();
 	}
+}
+canvasModel.addEventListener('click', function(evt) {
+	toggleAnimation();
 });
 
 // btn.addEventListener('click', function(evt) {
 // 	console.log(rotate(ballsArr[0].velocity, Math.PI/2));
 // 	ballsArr[0].velocity = rotate(ballsArr[0].velocity, Math.PI/2);
 // });
+
+let form = document.querySelector('form'),
+	countInput = form.querySelector('#count'),
+	percenttInput = form.querySelector('#percent'),
+	initBtn = form.querySelector('#init-btn');
+let clearGraphicBtn = form.querySelector('#clear-graphic-btn');
+
+initBtn.addEventListener('click', function(evt) {
+	evt.preventDefault();
+	if (status === 'paused') toggleAnimation();
+	c1.clearRect(0, 0, canvasModel.width, canvasModel.height);
+	c2.clearRect(0, 0, canvasGraphic.width, canvasGraphic.height);
+	linesArr = [];
+	lineX = 0;
+	count = Math.round(countInput.value);
+	// if (isNaN(count)) return;
+	staticPart = percenttInput.value / 100;
+	// console.log(count, staticPart);
+	createBalls(count, staticPart);
+	// animate(); 
+	console.log(ballsArr);
+});
+
+clearGraphicBtn.addEventListener('click', function(evt) {
+	evt.preventDefault();
+	toggleAnimation();
+	c2.clearRect(0,0,200,200);
+});

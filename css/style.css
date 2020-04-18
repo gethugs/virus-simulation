@@ -9,3 +9,16 @@
 .numbers div {
 	font-size: 20px;
 }
+
+form {
+	background-color: linen;
+	width: 600px;
+	box-sizing: border-box;
+	padding: 20px;
+}
+
+#init-btn {
+	width: 100px;
+	height: 30px;
+	border-radius: 20px;
+}
